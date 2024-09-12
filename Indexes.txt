@@ -1,0 +1,17 @@
+CREATE NONCLUSTERED INDEX IDX_PurchaseOrder_SupplierId 
+ON [dbo].[purchaseorder] ([supplierid]);
+
+CREATE NONCLUSTERED INDEX IDX_PurchaseOrderItem_PurchaseOrderId 
+ON [dbo].[purchaseorderitem] ([purchaseorderid]);
+
+CREATE NONCLUSTERED INDEX IDX_PurchaseOrderItem_ProductId 
+ON [dbo].[purchaseorderitem] ([productid]);
+
+CREATE NONCLUSTERED INDEX IDX_PurchaseReceipt_PurchaseOrderId 
+ON [dbo].[purchasereceipt] ([purchaseorder_id]);
+
+CREATE NONCLUSTERED INDEX IDX_PurchaseReceiptItem_PurchaseReceiptId 
+ON [dbo].[purchasereceiptitem] ([purchasereceiptid]);
+
+CREATE NONCLUSTERED INDEX IDX_PurchaseReceiptItem_ProductId 
+ON [dbo].[purchasereceiptitem] ([productid]);

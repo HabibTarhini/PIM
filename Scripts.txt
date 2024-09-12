@@ -1,0 +1,289 @@
+USE [master]
+GO
+/****** Object:  Database [PIM]    Script Date: 9/12/2024 10:18:45 PM ******/
+CREATE DATABASE [PIM]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'PIM', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\DATA\PIM.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'PIM_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL13.MSSQLSERVER\MSSQL\DATA\PIM_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+GO
+ALTER DATABASE [PIM] SET COMPATIBILITY_LEVEL = 130
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [PIM].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [PIM] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [PIM] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [PIM] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [PIM] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [PIM] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [PIM] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [PIM] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [PIM] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [PIM] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [PIM] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [PIM] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [PIM] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [PIM] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [PIM] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [PIM] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [PIM] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [PIM] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [PIM] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [PIM] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [PIM] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [PIM] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [PIM] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [PIM] SET RECOVERY FULL 
+GO
+ALTER DATABASE [PIM] SET  MULTI_USER 
+GO
+ALTER DATABASE [PIM] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [PIM] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [PIM] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [PIM] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [PIM] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [PIM] SET QUERY_STORE = OFF
+GO
+USE [PIM]
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET LEGACY_CARDINALITY_ESTIMATION = OFF;
+GO
+ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET LEGACY_CARDINALITY_ESTIMATION = PRIMARY;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET MAXDOP = 0;
+GO
+ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET MAXDOP = PRIMARY;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET PARAMETER_SNIFFING = ON;
+GO
+ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET PARAMETER_SNIFFING = PRIMARY;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET QUERY_OPTIMIZER_HOTFIXES = OFF;
+GO
+ALTER DATABASE SCOPED CONFIGURATION FOR SECONDARY SET QUERY_OPTIMIZER_HOTFIXES = PRIMARY;
+GO
+USE [PIM]
+GO
+/****** Object:  Table [dbo].[product]    Script Date: 9/12/2024 10:18:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[product](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[productname] [nvarchar](255) NOT NULL,
+	[price] [decimal](18, 2) NOT NULL,
+	[quantity] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[purchaseorder]    Script Date: 9/12/2024 10:18:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[purchaseorder](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[supplierid] [int] NOT NULL,
+	[totalamount] [decimal](18, 2) NOT NULL,
+	[created] [datetime] NULL,
+	[updated] [datetime] NULL,
+	[statusid] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[purchaseorderitem]    Script Date: 9/12/2024 10:18:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[purchaseorderitem](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[purchaseorderid] [int] NOT NULL,
+	[productid] [int] NOT NULL,
+	[quantity] [int] NOT NULL,
+	[unitprice] [decimal](18, 2) NOT NULL,
+	[price] [decimal](18, 2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[purchasereceipt]    Script Date: 9/12/2024 10:18:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[purchasereceipt](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[purchaseorder_id] [int] NOT NULL,
+	[receiptdate] [datetime] NULL,
+	[totalitems] [int] NOT NULL,
+	[totalprice] [decimal](18, 2) NOT NULL,
+	[created] [datetime] NULL,
+	[updated] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[purchasereceiptitem]    Script Date: 9/12/2024 10:18:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[purchasereceiptitem](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[purchasereceiptid] [int] NOT NULL,
+	[productid] [int] NOT NULL,
+	[receivedquantity] [int] NOT NULL,
+	[unitprice] [decimal](18, 2) NOT NULL,
+	[created] [datetime] NULL,
+	[updated] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[supplier]    Script Date: 9/12/2024 10:18:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[supplier](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [nvarchar](255) NOT NULL,
+	[contactname] [nvarchar](255) NULL,
+	[address] [nvarchar](255) NULL,
+	[phone] [nvarchar](20) NULL,
+	[email] [nvarchar](255) NULL,
+	[created] [datetime] NULL,
+	[updated] [datetime] NULL,
+	[isactive] [bit] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Index [IDX_PurchaseOrder_SupplierId]    Script Date: 9/12/2024 10:18:45 PM ******/
+CREATE NONCLUSTERED INDEX [IDX_PurchaseOrder_SupplierId] ON [dbo].[purchaseorder]
+(
+	[supplierid] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IDX_PurchaseOrderItem_ProductId]    Script Date: 9/12/2024 10:18:45 PM ******/
+CREATE NONCLUSTERED INDEX [IDX_PurchaseOrderItem_ProductId] ON [dbo].[purchaseorderitem]
+(
+	[productid] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IDX_PurchaseOrderItem_PurchaseOrderId]    Script Date: 9/12/2024 10:18:45 PM ******/
+CREATE NONCLUSTERED INDEX [IDX_PurchaseOrderItem_PurchaseOrderId] ON [dbo].[purchaseorderitem]
+(
+	[purchaseorderid] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IDX_PurchaseReceipt_PurchaseOrderId]    Script Date: 9/12/2024 10:18:45 PM ******/
+CREATE NONCLUSTERED INDEX [IDX_PurchaseReceipt_PurchaseOrderId] ON [dbo].[purchasereceipt]
+(
+	[purchaseorder_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IDX_PurchaseReceiptItem_ProductId]    Script Date: 9/12/2024 10:18:45 PM ******/
+CREATE NONCLUSTERED INDEX [IDX_PurchaseReceiptItem_ProductId] ON [dbo].[purchasereceiptitem]
+(
+	[productid] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Index [IDX_PurchaseReceiptItem_PurchaseReceiptId]    Script Date: 9/12/2024 10:18:45 PM ******/
+CREATE NONCLUSTERED INDEX [IDX_PurchaseReceiptItem_PurchaseReceiptId] ON [dbo].[purchasereceiptitem]
+(
+	[purchasereceiptid] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[purchaseorder] ADD  DEFAULT (getdate()) FOR [created]
+GO
+ALTER TABLE [dbo].[purchaseorderitem] ADD  DEFAULT ((0)) FOR [price]
+GO
+ALTER TABLE [dbo].[purchasereceipt] ADD  DEFAULT (getdate()) FOR [receiptdate]
+GO
+ALTER TABLE [dbo].[purchasereceipt] ADD  DEFAULT (getdate()) FOR [created]
+GO
+ALTER TABLE [dbo].[purchasereceiptitem] ADD  DEFAULT (getdate()) FOR [created]
+GO
+ALTER TABLE [dbo].[supplier] ADD  DEFAULT (getdate()) FOR [created]
+GO
+ALTER TABLE [dbo].[supplier] ADD  DEFAULT ((1)) FOR [isactive]
+GO
+ALTER TABLE [dbo].[purchaseorder]  WITH CHECK ADD  CONSTRAINT [FK_Supplier] FOREIGN KEY([supplierid])
+REFERENCES [dbo].[supplier] ([id])
+GO
+ALTER TABLE [dbo].[purchaseorder] CHECK CONSTRAINT [FK_Supplier]
+GO
+ALTER TABLE [dbo].[purchaseorderitem]  WITH CHECK ADD  CONSTRAINT [FK_PurchaseOrderItem_PurchaseOrder] FOREIGN KEY([purchaseorderid])
+REFERENCES [dbo].[purchaseorder] ([id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[purchaseorderitem] CHECK CONSTRAINT [FK_PurchaseOrderItem_PurchaseOrder]
+GO
+ALTER TABLE [dbo].[purchasereceipt]  WITH CHECK ADD  CONSTRAINT [FK_PurchaseReceipt_PurchaseOrder] FOREIGN KEY([purchaseorder_id])
+REFERENCES [dbo].[purchaseorder] ([id])
+GO
+ALTER TABLE [dbo].[purchasereceipt] CHECK CONSTRAINT [FK_PurchaseReceipt_PurchaseOrder]
+GO
+ALTER TABLE [dbo].[purchasereceiptitem]  WITH CHECK ADD  CONSTRAINT [FK_PurchaseReceiptItem_Product] FOREIGN KEY([productid])
+REFERENCES [dbo].[product] ([id])
+GO
+ALTER TABLE [dbo].[purchasereceiptitem] CHECK CONSTRAINT [FK_PurchaseReceiptItem_Product]
+GO
+ALTER TABLE [dbo].[purchasereceiptitem]  WITH CHECK ADD  CONSTRAINT [FK_PurchaseReceiptItem_PurchaseReceipt] FOREIGN KEY([purchasereceiptid])
+REFERENCES [dbo].[purchasereceipt] ([id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[purchasereceiptitem] CHECK CONSTRAINT [FK_PurchaseReceiptItem_PurchaseReceipt]
+GO
+USE [master]
+GO
+ALTER DATABASE [PIM] SET  READ_WRITE 
+GO
