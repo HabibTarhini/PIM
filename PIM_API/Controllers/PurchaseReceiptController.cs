@@ -15,7 +15,7 @@ namespace PIM_API.Controllers
         {
             _purchaseReceiptBusiness = purchaseReceiptBusiness;
         }
-
+         
         [HttpPost("CreateReceipt")]
         public async Task<PurchaseReceiptCreateResp> CreatePurchaseReceipt([FromBody] PurchaseReceiptCreateReq req)
         {
