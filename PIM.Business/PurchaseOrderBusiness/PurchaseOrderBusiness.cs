@@ -37,6 +37,7 @@ namespace PIM.Business.PurchaseOrder
                     };
                 }
 
+                // Step 2: Check if Qunatity is available and Product exists then calculate total amount
                 decimal totalAmount = 0;
                 var insufficientStockItems = new List<string>();
 
@@ -64,6 +65,8 @@ namespace PIM.Business.PurchaseOrder
                     };
                 }
 
+
+                //Step 3 : By default status of purchse is Pending
                 var purchaseOrder = new Entities.PurchaseOrder
                 {
                     SupplierId = req.SupplierId,
@@ -74,6 +77,8 @@ namespace PIM.Business.PurchaseOrder
                 _context.PurchaseOrders.Add(purchaseOrder);
                 await _context.SaveChangesAsync();
 
+
+                //Step 4 : We perfer to have each item of order in the req so in this table we have details for each item per order
                 foreach (var item in req.Items)
                 {
                     var product = await _context.Products.FindAsync(item.ProductId);
@@ -113,6 +118,7 @@ namespace PIM.Business.PurchaseOrder
                 .Include(po => po.PurchaseOrderItems)
                 .FirstOrDefaultAsync(po => po.Id == req.OrderId);
 
+            //Check first if purchase order is correct
             if (purchaseOrder == null)
             {
                 return new PurchaseOrderUpdateStatusResp

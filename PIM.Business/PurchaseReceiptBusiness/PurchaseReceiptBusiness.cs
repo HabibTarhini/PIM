@@ -28,6 +28,7 @@ namespace PIM.Business.PurchaseReceiptBusiness
                 var purchaseOrder = await _context.PurchaseOrders
                                               .Include(p => p.PurchaseOrderItems)
                                               .FirstOrDefaultAsync(p => p.Id == req.PurchaseOrderId);
+                //Check if purchase order is completed and order is available
                 if (purchaseOrder == null || purchaseOrder.StatusId != 2)
                 {
                     return new PurchaseReceiptCreateResp { statusCode = 1, message = "Invalid or incomplete purchase order." };
@@ -45,6 +46,7 @@ namespace PIM.Business.PurchaseReceiptBusiness
                 decimal totalPrice = 0m;
                 int totalItems = 0;
 
+                //Check each item the product and update inventory
                 foreach (var item in req.Items)
                 {
                     var orderItem = purchaseOrder.PurchaseOrderItems.FirstOrDefault(p => p.ProductId == item.ProductId);
