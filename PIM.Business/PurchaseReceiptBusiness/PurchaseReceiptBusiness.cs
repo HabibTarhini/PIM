@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Data;
 
 namespace PIM.Business.PurchaseReceiptBusiness
 {
@@ -22,7 +23,7 @@ namespace PIM.Business.PurchaseReceiptBusiness
         }
         public async Task<PurchaseReceiptCreateResp> CreatePurchaseReceipt(PurchaseReceiptCreateReq req)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
             {
                 var purchaseOrder = await _context.PurchaseOrders
                                               .Include(p => p.PurchaseOrderItems)
