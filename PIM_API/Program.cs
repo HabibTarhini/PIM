@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Web;
@@ -33,8 +34,41 @@ try
     builder.Services.AddScoped<IPurchaseOrderBusiness, PurchaseOrderBusiness>();
     builder.Services.AddScoped<IPurchaseReceiptBusiness, PurchaseReceiptBusiness>();
     builder.Services.AddScoped<IProductBusiness, ProductBusiness>();
+    builder.Services.AddHealthChecks();
+
+    //if (Environment.OSVersion.Platform == PlatformID.Unix)
+    //{
+    //    builder.WebHost.ConfigureKestrel(options =>
+    //    {
+    //        options.ListenAnyIP(builder.Configuration.GetValue<int>("PortLinux")); // to listen for incoming http connection on port 5001
+    //                                                                               // options.ListenAnyIP(7001, configure => configure.UseHttps()); // to listen for incoming https connection on port 7001
+    //    });//linux
+
+    //    //Remove Server header
+    //    builder.WebHost.UseKestrel(option => option.AddServerHeader = false);
+    //}
+
+    //builder.Services.AddEndpointsApiExplorer();
+
+    //builder.Services.Configure<KestrelServerOptions>(options =>
+    //{
+    //    options.AllowSynchronousIO = true;
+    //});
+    //// If using IIS:
+    //builder.Services.Configure<IISServerOptions>(options =>
+    //{
+    //    options.AllowSynchronousIO = true;
+    //});
 
 
+    //builder.Services.AddMvc(op =>
+    //{
+    //    op.EnableEndpointRouting = false;
+    //    op.Filters.Add(typeof(ModelValidationFilter));
+    //});
+
+    //builder.Services.AddControllers(
+    //    options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
 
     var app = builder.Build();
@@ -45,6 +79,9 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+
+
+   
 
     app.UseHttpsRedirection();
     app.UseMiddleware<PIMMiddleware>();
