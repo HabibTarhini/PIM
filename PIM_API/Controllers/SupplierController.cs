@@ -18,26 +18,26 @@ namespace PIM_API.Controllers
             _supplierBusiness = supplierBusiness;
         }
 
-        [HttpPost]
+        [HttpPost("Add")]
         public async Task<SupplierAddResp> AddSupplier([FromBody] SupplierAddReq req)
         {
             return await _supplierBusiness.AddSupplier(req);
         }
 
-        [HttpPut("{id}")]
-        public async Task<SupplierUpdateResp> UpdateSupplier(int id, [FromBody] SupplierUpdateReq supplier)
+        [HttpPost("Update")]
+        public async Task<SupplierUpdateResp> UpdateSupplier([FromBody] SupplierUpdateReq supplier)
         {
             return await _supplierBusiness.UpdateSupplier(supplier);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<SupplierDeleteResp> DeleteSupplier(int id)
         {
             var req = new SupplierDeleteReq { Id = id };
             return await _supplierBusiness.DeleteSupplier(req);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("ById/{id}")]
         public async Task<SupplierByIdResp> GetSupplier(int id)
         {
             var req = new SupplierByIdReq { Id = id };

@@ -18,7 +18,6 @@ namespace PIM.Repository
         public DbSet<Product> Products { get; set; }
         public DbSet<PurchaseReceipt> PurchaseReceipts { get; set; }
         public DbSet<PurchaseReceiptItem> PurchaseReceiptItems { get; set; }
-        public DbSet<ItemLedgerEntry> ItemLedgerEntries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -121,22 +120,7 @@ namespace PIM.Repository
                       .WithMany()
                       .HasForeignKey(e => e.ProductId)
                       .OnDelete(DeleteBehavior.Cascade);*/
-            });
-
-            modelBuilder.Entity<ItemLedgerEntry>(entity =>
-            {
-                entity.ToTable("itemledgerentry");
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.ProductId).IsRequired();
-                entity.Property(e => e.Quantity).IsRequired();
-                entity.Property(e => e.Created).HasDefaultValueSql("GETDATE()");
-                entity.Property(e => e.Updated).HasDefaultValueSql("GETDATE()");
-
-                entity.HasOne<Product>()
-                      .WithMany()
-                      .HasForeignKey(e => e.ProductId)
-                      .OnDelete(DeleteBehavior.Restrict);
-            });
+            });            
         }
     }
 }

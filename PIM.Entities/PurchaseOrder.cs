@@ -24,7 +24,7 @@ namespace PIM.Entities
         public decimal TotalAmount { get; set; } // Total amount of the order
         public DateTime Created { get; set; } = DateTime.Now; // Date when the order was created
         public DateTime? Updated { get; set; } // Date when the order was last updated
-        public int StatusId { get; set; }  // Status of the order (1 = Pending, 2 = Completed, etc.)
+        public int StatusId { get; set; }  // Status of the order (1 = Pending, 2 = Completed, 3 = Canceled)
         //public DateTime OrderDate { get; set; } // Date when the order was placed
 
         public ICollection<PurchaseOrderItem> PurchaseOrderItems { get; set; } // Collection of items in the order

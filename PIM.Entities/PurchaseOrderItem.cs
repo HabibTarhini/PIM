@@ -6,14 +6,6 @@ using System.Threading.Tasks;
 
 namespace PIM.Entities
 {
-    /*public class PurchaseOrderItem
-    {
-        public int Id { get; set; }
-        public int PurchaseOrderId { get; set; }  // Foreign key to PurchaseOrder
-        public int ProductId { get; set; }        // Foreign key to Product (if applicable)
-        public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-    }*/
     public class PurchaseOrderItem
     {
         public int Id { get; set; } // Unique identifier for the order item

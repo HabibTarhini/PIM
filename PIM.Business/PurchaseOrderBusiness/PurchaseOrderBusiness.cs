@@ -23,82 +23,87 @@ namespace PIM.Business.PurchaseOrder
         
         public async Task<PurchaseOrderCreateResp> CreatePurchaseOrder(PurchaseOrderCreateReq req)
         {
-            // Step 1: Check if supplier exists
-            var supplier = await _context.Suppliers.FindAsync(req.SupplierId);
-            if (supplier == null)
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                return new PurchaseOrderCreateResp
+                // Step 1: Check if supplier exists
+                var supplier = await _context.Suppliers.FindAsync(req.SupplierId);
+                if (supplier == null)
                 {
-                    statusCode = 1,
-                    message = "Supplier not found."
-                };
-            }
-
-            decimal totalAmount = 0;
-            var insufficientStockItems = new List<string>();
-
-            foreach (var item in req.Items)
-            {
-                var product = await _context.Products.FindAsync(item.ProductId);
-                if (product == null || product.Quantity < item.Quantity)
-                {
-                    insufficientStockItems.Add(product?.ProductName ?? "Unknown Product");
-                }
-                else
-                {
-                    var unitPrice = product.Price;
-
-                    totalAmount += item.Quantity * unitPrice;
-                }
-            }
-
-            if (insufficientStockItems.Count > 0)
-            {
-                return new PurchaseOrderCreateResp
-                {
-                    statusCode = 2,
-                    message = $"Insufficient stock for: {string.Join(", ", insufficientStockItems)}"
-                };
-            }
-
-            var purchaseOrder = new Entities.PurchaseOrder
-            {
-                SupplierId = req.SupplierId,
-                TotalAmount = totalAmount,
-                StatusId = 1, // Default to 'Pending'
-                              // OrderDate = DateTime.Now // Set the order date to now
-            };
-            _context.PurchaseOrders.Add(purchaseOrder);
-            await _context.SaveChangesAsync();
-
-            foreach (var item in req.Items)
-            {
-                var product = await _context.Products.FindAsync(item.ProductId);
-                if (product != null)
-                {
-                    var unitPrice = product.Price;
-
-                    var orderItem = new PurchaseOrderItem
+                    return new PurchaseOrderCreateResp
                     {
-                        PurchaseOrderId = purchaseOrder.Id,
-                        ProductId = item.ProductId,
-                        Quantity = item.Quantity,
-                        UnitPrice = unitPrice,
-                        Price = item.Quantity * unitPrice
+                        statusCode = 1,
+                        message = "Supplier not found."
                     };
-                    _context.PurchaseOrderItems.Add(orderItem);
                 }
+
+                decimal totalAmount = 0;
+                var insufficientStockItems = new List<string>();
+
+                foreach (var item in req.Items)
+                {
+                    var product = await _context.Products.FindAsync(item.ProductId);
+                    if (product == null || product.Quantity < item.Quantity)
+                    {
+                        insufficientStockItems.Add(product?.ProductName ?? "Unknown Product");
+                    }
+                    else
+                    {
+                        var unitPrice = product.Price;
+
+                        totalAmount += item.Quantity * unitPrice;
+                    }
+                }
+
+                if (insufficientStockItems.Count > 0)
+                {
+                    return new PurchaseOrderCreateResp
+                    {
+                        statusCode = 2,
+                        message = $"Insufficient stock for: {string.Join(", ", insufficientStockItems)}"
+                    };
+                }
+
+                var purchaseOrder = new Entities.PurchaseOrder
+                {
+                    SupplierId = req.SupplierId,
+                    TotalAmount = totalAmount,
+                    StatusId = 1, // Default to 'Pending'
+                                  // OrderDate = DateTime.Now // Set the order date to now
+                };
+                _context.PurchaseOrders.Add(purchaseOrder);
+                await _context.SaveChangesAsync();
+
+                foreach (var item in req.Items)
+                {
+                    var product = await _context.Products.FindAsync(item.ProductId);
+                    if (product != null)
+                    {
+                        var unitPrice = product.Price;
+
+                        var orderItem = new PurchaseOrderItem
+                        {
+                            PurchaseOrderId = purchaseOrder.Id,
+                            ProductId = item.ProductId,
+                            Quantity = item.Quantity,
+                            UnitPrice = unitPrice,
+                            Price = item.Quantity * unitPrice
+                        };
+                        _context.PurchaseOrderItems.Add(orderItem);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return new PurchaseOrderCreateResp
+                {
+                    statusCode = 0,
+                    message = "Purchase order created successfully.",
+                    OrderId = purchaseOrder.Id,
+                    TotalAmount = totalAmount
+                };
             }
-
-            await _context.SaveChangesAsync();
-
-            return new PurchaseOrderCreateResp
-            {
-                statusCode = 0,
-                message = "Purchase order created successfully.",
-                OrderId = purchaseOrder.Id,
-                TotalAmount = totalAmount
-            };
         }
 
         public async Task<PurchaseOrderUpdateStatusResp> UpdatePurchaseOrderStatus(PurchaseOrderUpdateStatusReq req)

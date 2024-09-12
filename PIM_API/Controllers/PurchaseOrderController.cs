@@ -16,16 +16,15 @@ namespace PIM_API.Controllers
             _purchaseOrderBusiness = purchaseOrderBusiness;
         }
 
-        [HttpPost]
+        [HttpPost("CreatePurchase")]
         public async Task<PurchaseOrderCreateResp> CreatePurchaseOrder([FromBody] PurchaseOrderCreateReq req)
         {
             return await _purchaseOrderBusiness.CreatePurchaseOrder(req);
         }
 
-        [HttpPut("{id}")]
-        public async Task<PurchaseOrderUpdateStatusResp> UpdatePurchaseOrderStatus(int id, [FromBody] PurchaseOrderUpdateStatusReq req)
+        [HttpPost("UpdateStatus")]
+        public async Task<PurchaseOrderUpdateStatusResp> UpdatePurchaseOrderStatus([FromBody] PurchaseOrderUpdateStatusReq req)
         {
-            req.OrderId = id;
             return await _purchaseOrderBusiness.UpdatePurchaseOrderStatus(req);
         }
     }

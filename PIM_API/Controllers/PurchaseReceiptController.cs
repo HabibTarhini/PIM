@@ -16,13 +16,13 @@ namespace PIM_API.Controllers
             _purchaseReceiptBusiness = purchaseReceiptBusiness;
         }
 
-        [HttpPost]
+        [HttpPost("CreateReceipt")]
         public async Task<PurchaseReceiptCreateResp> CreatePurchaseReceipt([FromBody] PurchaseReceiptCreateReq req)
         {
             return await _purchaseReceiptBusiness.CreatePurchaseReceipt(req);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("ViewPurchase/{id}")]
         public async Task<PurchaseReceiptViewResp> ViewPurchaseReceipt(int id)
         {
             var req = new PurchaseReceiptViewReq { ReceiptId = id };
