@@ -23,7 +23,7 @@ namespace PIM.Business.PurchaseOrder
         
         public async Task<PurchaseOrderCreateResp> CreatePurchaseOrder(PurchaseOrderCreateReq req)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            using (var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.Serializable))
             {
                 // Step 1: Check if supplier exists
                 var supplier = await _context.Suppliers.FindAsync(req.SupplierId);
