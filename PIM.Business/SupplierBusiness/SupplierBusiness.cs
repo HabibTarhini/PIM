@@ -1,4 +1,5 @@
-﻿using PIM.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using PIM.Entities;
 using PIM.Entities.Request;
 using PIM.Entities.Respone;
 using PIM.Repository;
@@ -22,6 +23,26 @@ namespace PIM.Business.Supplier
 
         public async Task<SupplierAddResp> AddSupplier(SupplierAddReq req)
         {
+            bool emailExists = await _context.Suppliers.AnyAsync(s => s.Email == req.Email);
+            bool phoneExists = await _context.Suppliers.AnyAsync(s => s.Phone == req.Phone);
+
+            if (emailExists)
+            {
+                return new SupplierAddResp
+                {
+                    statusCode = 1,
+                    message = "A supplier with this email already exists."
+                };
+            }
+
+            if (phoneExists)
+            {
+                return new SupplierAddResp
+                {
+                    statusCode = 2,
+                    message = "A supplier with this phone number already exists."
+                };
+            }
             var supplier = new Entities.Supplier
             {
                 Name = req.Name,
